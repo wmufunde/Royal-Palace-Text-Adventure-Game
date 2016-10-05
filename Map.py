@@ -1,126 +1,75 @@
+from Room import Room
+from Enemy import *
+
+reusable_items = ["sword", "crossbow", "pack of matches", "shield"]
+
+ballroom = Room("Ballroom", ["sword"], [])
+hallway = Room("Hallway", ["crossbow"], [])
+female_bathroom = Room("Female Bathroom", ["pack of matches"], [])
+antechamber = Room("Antechamber", [], [dark_elf])
+male_bathroom = Room("Male Bathroom", ["shield"], [])
+throne_room = Room("Throne Room", [], [goblin])
+north_vestibule = Room("North Vestibule", ["super speed spell"], [harpy])
+south_vestibule = Room("South Vestibule", ["lightning spell"], [])
+blue_drawing_room = Room("Blue Drawing Room", ["freezing spell"], [malignant_spirit])
+state_room = Room("State Room", [], [])
+hallway_2 = Room("Hallway 2", [], [goblin])
+hallway_3 = Room("Hallway 3", [], [])
+library = Room("Library", ["invisibility spell"], [malignant_spirit])
+gallery = Room("Gallery", [], [malignant_spirit])
+
 #  A dictionary linking a room to other room positions
 rooms = {
 
-    1 : {"name" : "Ballroom" ,
-        "east" : 2, # Hallway
-         "north" : 7, #North Vestibule
-         "south" :8 }, #South Vestibule
+    ballroom: {"east": hallway,
+                "north": north_vestibule,
+                "south": south_vestibule},
 
+    hallway : {"north-west": female_bathroom,
+               "north-east": antechamber,
+               "south-west": male_bathroom,
+               "south-east": throne_room},
 
-    2 : {"name" : "Hallway",
-         "north-west": 3, #Female Bathroom"
-         "north-east": 4, #"Antechamber"
-         "south-west": 5, #"Male Bathroom"
-         "south-east": 6}, #"Throne Room"}
+    female_bathroom : { "name" : female_bathroom,
+                        "south" : hallway},
 
-    3 : { "name" : "Female Bathroom" ,
-          "south" : 2 } , # Hallway
+    antechamber : {"south" : hallway,
+                   "north" : blue_drawing_room},
 
-    4 : { "name" : "Antechamber" ,
-          "south" : 2, # Hallway
-          "north" : 9},  #Blue Drawing Room
+    male_bathroom : {"north" : hallway},
 
-    5 : { "name" : "Male Bathroom" ,
-          "north" : 2}, #Hallway
+    throne_room : {"north" : hallway},
 
-    6 : { "name" : "Throne Room" ,
-          "north" : 2}, # Hallway
+    north_vestibule : {"east" : hallway_3,
+                       "south": state_room},
 
-    7 : {"name" : "North Vestibule",
-         "east" : 12, #Hallway 3
-         "south" : 10}, # State Room
+    south_vestibule : {"east": hallway_3,
+                       "north" : state_room},
 
-    8 : {"name": "South Vestibule",
-         "east": 12, #Hallway 3
-         "north" : 10}, #State Room
+    blue_drawing_room : {"south": hallway_2},
 
-    9 : {"name": "Blue Drawing Room",
-         "south": 11}, # Hallway 2
+    state_room : {"north" : north_vestibule,
+                  "east" : hallway_3,
+                  "south" : south_vestibule},
 
-    10 : {"name" : "State Room",
-          "north" : 7, # North Vestibule
-          "east" : 12, # Hallway 3
-          "south" : 8},
+    hallway_2 : {"north" : blue_drawing_room,
+                 "east": gallery,
+                 "west": library},
 
-    11 : {"name" : "Hallway 2",
-          "north" : 9, # Blue Drawing Room
-          "east": 14, # Gallery
-          "west": 13}, # Library
+    hallway_3 : {"north-west" : north_vestibule,
+                 "north-east" : blue_drawing_room,
+                 "west" : state_room,
+                 "north-west" : south_vestibule,
+                 "south-east" : library},
 
-    12 : {"name" : "Hallway 3",
-          "north-west" : 7, # North Vestibule
-          "north-east" : 9, # Blue Drawing Room
-          "west" : 10, # State Room
-          "north-west" : 8, # South Vestibule
-          "south-east" : 13}, # Library
+    library : {"east" : hallway_2,
+               "west" : hallway_3},
 
-
-    13 : {"name" : "Library",
-          "east" : 11, # Hallway 2
-          "west" : 12}, # Hallway 3
-
-    14: {"name" : "Gallery",
-         "west" : 11} # Hallway 2
-
+    gallery : {"west" : hallway_2}
 }
 
-"""Stores all possible directions from current room """
+current_room = ballroom
+current_room = rooms[current_room]["east"]
+current_room = rooms[current_room]["south-west"]
 
-available_rooms = {1: {"directions": ["north", "east", "south"], "name": "Ballroom"},
-                   2: {"directions": ["north-west", "north-east","south-west", "south-east"], "name": "Hallway"},
-                   3: {"directions": ["south"], "name": "Female Bathroom"},
-                   4: {"directions": ["north", "south"], "name": "Antechamber"},
-                   5: {"directions": ["north"], "name": "Male Bathroom"},
-                   6: {"directions": ["north"], "name": "Throne Room"},
-                   7: {"directions": ["east", "south"], "name": "North Vestibule"},
-                   8: {"directions": ["north", "east", "south"], "name": "South Vestibule"},
-                   9: {"directions": ["north", "south", "west"], "name": "Blue Drawing Room"},
-                   10: {"directions": ["north", "east", "south"], "name": "State Room"},
-                   11: {"directions": ["north", "east", "west"], "name": "Hallway 2"},
-                   12: {"directions": ["north-west", "north-east", "west", "north-west", "south-east"], "name": "Hallway 3"},
-                   13: {"directions": ["east", "west"], "name": "Library"},
-                   14: {"directions": ["west"], "name": "Gallery"}
-                       }
-
-room_items = { 1: {"items": ["sword"], "name": "Ballroom"},
-               2: {"items": ["crossbow"], "name": "Hallway"},
-               3: {"items": ["pack of matches"], "name": "Female Bathroom"},
-               4: {"items": [], "name": "Antechamber"},
-               5: {"items": ["shield"], "name": "Male Bathroom"},
-               6: {"items": [], "name": "Throne Room"},
-               7: {"items": ["super speed spell."], "name": "North Vestibule"},
-               8: {"items": ["lightning spell."], "name": "South Vestibule"},
-               9: {"items": ["freezing spell."], "name": "Blue Drawing Room"},
-               10: {"items": [], "name":"State Room"},
-               11: {"items": [], "name": "Hallway 2"},
-               12: {"items": [], "name": "Hallway 3"},
-               13: {"items": ["invisibility spell"], "name": "Library"},
-               14: {"items": ["engagement ring"], "name": "Gallery"}
-               }
-
-
-enemies = {1: {"type": [], "name": "Ballroom"},
-           2: {"type": [], "name": "Hallway"},
-           3: {"type": [], "name": "Female Bathroom"},
-           4: {"type": ["dark elf"], "name": "Antechamber"},
-           5: {"type": [], "name": "Male Bathroom"},
-           6: {"type": ["goblin"], "name": "Throne Room"},
-           7: {"type": ["harpy"], "name": "North Vestibule"},
-           8: {"type": [], "name": "South Vestibule"},
-           9: {"type": ["malignant spirit"], "name": "Blue Drawing Room"},
-           10: {"type": [], "name": "State Room"},
-           11: {"type": ["goblin"], "name": "Hallway 2"},
-           12: {"type": [], "name": "Hallway 3"},
-           13: {"type": ["malignant spirit"], "name": "Library"},
-           14: {"type": ["malignant spirit"], "name": "Gallery"}}
-
-
-# This is where the dictionaires go
-
-def create_map():
-    #Those dictionaries only used by initializer
-
-    map[0] = Room()
-    map[1] = Room()
-    map[2] = Room()
-
+print(current_room.name)
