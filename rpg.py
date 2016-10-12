@@ -235,5 +235,3 @@ while True:
         # There is no door (link) to the new room
         else:
             print("You can't go that way!")
-
-

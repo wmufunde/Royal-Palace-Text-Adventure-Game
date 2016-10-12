@@ -30,8 +30,7 @@ rooms = {
                "south-west": male_bathroom,
                "south-east": throne_room},
 
-    female_bathroom : { "name" : female_bathroom,
-                        "south" : hallway},
+    female_bathroom : {"south" : hallway},
 
     antechamber : {"south" : hallway,
                    "north" : blue_drawing_room},

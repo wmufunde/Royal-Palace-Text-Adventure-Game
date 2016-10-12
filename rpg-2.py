@@ -1,9 +1,13 @@
 #!/bin/env python3
 
 from Map import *
+import random
 
  # The player begins with 100 health points
 health_points = 100
+
+# The player's score increases when they defeat an enemy
+score = 0
 
 def showInstructions():
     # Print a main menu and the commands
@@ -56,19 +60,20 @@ def pick_up_item(currentRoom):
     pickup = input("> yes or no")
     if pickup == "yes":
 
-        for item in currentRoom.items:
+        for i,item in enumerate(currentRoom.items):
             addToMagicBag(item)
-            #magicBag.append(item)
+            currentRoom.items.pop(i)
         print(magicBag)
 
 """Allows the player to use an item in the magic bag to attack a creature"""
 def attack(currentRoom): # I NEED WORK ON THIS!!!
+    global score
     attack = input("> attack/ do nothing")
     if attack == "attack":
         print("Select the weapon or spell you wish to use to attack")
     item_used = input(">")
     if item_used in magicBag: # if item is in magicBag then use it to attack the enemy
-        for enemy in currentRoom.enemies:
+        for enemy in currentRoom.enemies: # how many attack points each item holds
             if item_used == "sword":
                 enemy.health -= 10
             if item_used == "crossbow":
@@ -84,7 +89,12 @@ def attack(currentRoom): # I NEED WORK ON THIS!!!
             if item_used == "invisibility spell":
                 enemy.health -= 5
 
-        print("The enemy has " + str ([e.health for e in currentRoom.enemies])+ " health points left")
+        if enemy.health  <= 0:
+            print("Your enemy has been defeated!")
+            score += (enemy.original_health)
+            print("Your score is now " + str(score))
+        else:
+            print("The enemy has " + str ([e.health for e in currentRoom.enemies])+ " health points left")
 
         #print("your enemy has been defeated")
         if item_used not in reusable_items:
@@ -94,17 +104,21 @@ def attack(currentRoom): # I NEED WORK ON THIS!!!
         print(magicBag)
 
 def be_attacked(currentRoom):
+    global health_points
     for enemy in currentRoom.enemies:
-        global health_points
-        currentRoom.enemies
-        if enemy == "dark elf":
-            health_points -= 20
-        if enemy == "goblin":
-            health_points -= 7
-        if enemy == "harpy":
-            health_points -= 30
-        if enemy == "malignant spirit":
-            health_points -= 15
+        health_points -= enemy.damage
+        #if enemy == "dark elf":
+         #   health_points -= 20
+        #if enemy == "goblin":
+         #   health_points -= 7
+        #if enemy == "harpy":
+         #   health_points -= 30
+       # if enemy == "malignant spirit":
+        #    health_points -= 15
+    print("You have been attacked! Your health points is now " + str(health_points))
+
+def who_attacks_first():
+    return random.choice([True, False])
 
 # Loop infinitely
 while True:
@@ -126,8 +140,16 @@ while True:
       pick_up_item(currentRoom)
     if currentRoom.enemies != []:
       show_enemies(currentRoom)
-      attack(currentRoom)
-      be_attacked(currentRoom)
+      #attack(currentRoom)
+      order = who_attacks_first()
+      #import pdb; pdb.set_trace() #breakpoint
+      if order == True:
+        attack(currentRoom)
+        be_attacked(currentRoom)
+      else:
+        be_attacked(currentRoom)
+        attack(currentRoom)
+
 
     # Get the player's 'move'
     # Split() breaks it up into a list array
