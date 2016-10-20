@@ -1,7 +1,7 @@
 class Item:
     def __init__(self, name, damage ):
         self.name = name
-        self.damaage = damage
+        self.damage = damage
 
 sword = Item("sword", 10)
 crossbow Item("crossbow", 15)
